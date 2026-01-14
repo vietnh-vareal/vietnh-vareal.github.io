@@ -152,41 +152,47 @@
 
     <script>
         /**
-         * Hàm tạo số ngẫu nhiên
-         * max: Giới hạn số lớn nhất (45 hoặc 55)
-         * elementId: ID của thẻ HTML để hiển thị kết quả
+         * Hàm tạo số ngẫu nhiên an toàn (Cryptographically Secure)
+         * Sử dụng window.crypto.getRandomValues
          */
+        function getSecureRandomNumber(max) {
+            // Tạo một mảng chứa 1 số nguyên không dấu 32-bit
+            const array = new Uint32Array(1);
+            
+            // Lấy giá trị ngẫu nhiên từ hệ thống đổ vào mảng
+            window.crypto.getRandomValues(array);
+            
+            // array[0] là một số rất lớn (từ 0 đến 4 tỷ).
+            // Ta dùng toán tử chia lấy dư (%) để đưa về khoảng [0, max-1]
+            // Sau đó cộng 1 để thành [1, max]
+            return (array[0] % max) + 1;
+        }
+
         function rollLottery(max, elementId) {
             const container = document.getElementById(elementId);
-            const numbers = new Set(); // Sử dụng Set để đảm bảo số không trùng lặp
+            const numbers = new Set();
 
-            // Random cho đến khi đủ 6 số
+            // Vòng lặp cho đến khi đủ 6 số
             while(numbers.size < 6) {
-                // Tạo số từ 1 đến max
-                const num = Math.floor(Math.random() * max) + 1;
+                // Thay thế Math.random bằng hàm Secure Random mới
+                const num = getSecureRandomNumber(max);
                 numbers.add(num);
             }
 
-            // Chuyển Set sang Array và sắp xếp tăng dần
+            // Chuyển sang Array và sắp xếp
             const sortedNumbers = Array.from(numbers).sort((a, b) => a - b);
 
-            // Xóa kết quả cũ
+            // Render ra màn hình
             container.innerHTML = '';
-
-            // Hiển thị từng số ra màn hình
             sortedNumbers.forEach((num, index) => {
                 const ball = document.createElement('div');
                 ball.className = 'ball';
-                
-                // Thêm số 0 đằng trước nếu nhỏ hơn 10 cho đẹp
                 ball.innerText = num < 10 ? `0${num}` : num;
-                
-                // Thêm hiệu ứng delay nhỏ cho từng bóng để trông mượt mà hơn
                 ball.style.animationDelay = `${index * 0.05}s`;
-                
                 container.appendChild(ball);
             });
         }
     </script>
 </body>
 </html>
+
