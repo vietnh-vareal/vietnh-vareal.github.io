@@ -10,6 +10,7 @@
             --secondary-color: #f57c00; /* Cam */
             --bg-color: #f4f6f8;
             --text-color: #333;
+            --sms-color: #2e7d32;
         }
 
         body {
@@ -122,6 +123,39 @@
         }
         .btn-655:hover { background-color: #e65100; }
 
+        button, .btn-sms {
+            border: none; 
+            padding: 12px 20px; 
+            font-size: 1rem;
+            border-radius: 25px; 
+            cursor: pointer; 
+            font-weight: 600; 
+            color: white;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1); 
+            text-decoration: none;
+            transition: transform 0.1s, box-shadow 0.1s;
+        }
+
+        button:active, .btn-sms:active { 
+            transform: translateY(2px); 
+            box-shadow: 0 2px 3px rgba(0,0,0,0.1);
+        }
+
+        .sms-container {
+            padding-top: 10px;
+            width: 150px;
+            margin: auto;
+            display: none; /* Ẩn mặc định, sẽ hiển thị khi có số */
+        }
+
+        .btn-sms {
+            background-color: var(--sms-color);
+            display: block;
+            width: 100%;
+            box-sizing: border-box;
+            border: 1px solid #1b5e20;
+        }
+
         @keyframes popIn {
             from { transform: scale(0); opacity: 0; }
             to { transform: scale(1); opacity: 1; }
@@ -135,18 +169,26 @@
 
         <div class="lottery-section type-645">
             <h2>Mega 6/45</h2>
+            <h5>Mở thưởng 18h00 thứ Tư, thứ Sáu, Chủ Nhật</h5>
             <div class="results" id="result-645">
                 <span style="color: #999; font-size: 0.9rem;">Nhấn nút để quay số</span>
             </div>
             <button class="btn-645" onclick="rollLottery(45, 'result-645')">Quay Số 6/45</button>
+            <div class="sms-container" id="sms-box-645">
+                <a href="#" id="sms-link-645" class="btn-sms">📲 Gửi SMS</a>
+            </div>
         </div>
 
         <div class="lottery-section type-655">
             <h2>Power 6/55</h2>
+            <h5>Mở thưởng 18h00 thứ Ba, thứ Năm, thứ Bảy</h5>
             <div class="results" id="result-655">
                 <span style="color: #999; font-size: 0.9rem;">Nhấn nút để quay số</span>
             </div>
             <button class="btn-655" onclick="rollLottery(55, 'result-655')">Quay Số 6/55</button>
+            <div class="sms-container" id="sms-box-655">
+                <a href="#" id="sms-link-655" class="btn-sms">📲 Gửi SMS</a>
+            </div>
         </div>
     </div>
 
@@ -191,6 +233,23 @@
                 ball.style.animationDelay = `${index * 0.05}s`;
                 container.appendChild(ball);
             });
+
+            const stringNumbers = sortedNumbers.map(num => num < 10 ? `0${num}` : num).join(' ');
+            
+            // Cú pháp tham khảo của Vietlott SMS: MãSảnPhẩm K1 S CácBộSố
+            // VD: 645 K1 S 01 02 03 04 05 06
+            const smsBody = `6${max} K1 S ${stringNumbers}`;
+            console.log('SMS Body:', smsBody); // Debug: In ra nội dung SMS
+            
+            // Tạo link SMS (Gửi tới đầu số 9969)
+            // Fix tương thích cho iOS/Android: thường dùng dấu "?" cho body
+            const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+            const separator = isIOS ? '&' : '?'; 
+            
+            const smsLink = document.getElementById(`sms-link-6${max}`);
+            const smsBox = document.getElementById(`sms-box-6${max}`);
+            smsLink.href = `sms:9969${separator}body=${encodeURIComponent(smsBody)}`;
+            smsBox.style.display = 'block';
         }
     </script>
 </body>
